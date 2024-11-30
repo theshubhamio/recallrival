@@ -19,7 +19,7 @@ function GridRecall() {
 
     // Player 2
     const [player2, setPlayer2] = useState({
-        mode: 0,
+        mode: 1,
         haveLost: false,
         turn: true,
         playedDots: [],
@@ -28,49 +28,68 @@ function GridRecall() {
 
     function onDotClick(index) {
 
-        const p1 = {...player1};
-        const p2 = {...player2};
+        if (griddots[index].isSelected) return; // Prevent selecting already clicked dots
 
-        if(player1.turn && !player2.turn){
+
+
+        const p1 = { ...player1 };
+        const p2 = { ...player2 };
+
+
+
+
+        if (player1.turn && !player2.turn) {
+
+
 
             p1.playedDots.push(index);
             console.log("p1 played")
 
-            if(p1.playedDots.length>p1.correctDots.length){
+            if (p1.playedDots.length > p1.correctDots.length) {
                 //tranfter the turn
 
-                p1.turn =false;
-                p2.turn = true;
 
-                p1.correctDots = p1.playedDots;
-                p2.correctDots = p1.playedDots;
 
-                p1.playedDots = [];
-                p2.playedDots = [];
+                let newgriddots = [...griddots];
+                newgriddots[index] = { isSelected: true, isCorrect: true };
 
-                setPlayer1(p1);
-                setPlayer2(p2)
+                setGriddots(newgriddots);
 
                 //reset grid
-                const resetGrid = Array(25).fill(
-                    { isSelected: false, isCorrect: true }
-                )
-                setGriddots(resetGrid);
-                console.log("p1 transfeted");
+                setTimeout(() => {
+                    const resetGrid = Array(25).fill(
+                        { isSelected: false, isCorrect: true }
+                    )
+                    setGriddots(resetGrid);
+                    console.log("p1 transfeted");
+                    p1.turn = false;
+                    p2.turn = true;
 
-            }else{
+                    p1.correctDots = p1.playedDots;
+                    p2.correctDots = p1.playedDots;
+
+                    p1.playedDots = [];
+                    p2.playedDots = [];
+
+                    setPlayer1(p1);
+                    setPlayer2(p2);
+                }, 500); // 500ms delay
+
+
+            } else {
 
                 //cleck of the selected dot is correct
-                if(p1.playedDots[p1.playedDots.length-1]===p1.correctDots[p1.playedDots.length-1]){
+                if (p1.playedDots[p1.playedDots.length - 1] === p1.correctDots[p1.playedDots.length - 1]) {
 
                     let newgriddots = [...griddots];
-                    newgriddots[index] = {isSelected :true, isCorrect:true};
+                    newgriddots[index] = { isSelected: true, isCorrect: true };
 
                     setGriddots(newgriddots);
-                    
-                    console.log("p1 clicked the correct dot")
 
-                }else{
+                    console.log(p1)
+
+
+                } else {
                     //p1 lost
                     console.log("p1 lost")
                 }
@@ -78,41 +97,65 @@ function GridRecall() {
 
         }
 
-        if(player2.turn && !player1.turn){
+        if (player2.turn && !player1.turn) {
 
             p2.playedDots.push(index);
             console.log("p2 played")
+            console.log(p2);
 
 
-            if(p2.playedDots.length>p2.correctDots.length){
+
+            if (p2.playedDots.length > p2.correctDots.length) {
                 //tranfter the turn
-                p2.turn =false;
-                p2.correctDots = p2.playedDots;
-                setPlayer2(p2);
+                p2.turn = false;
                 p1.turn = true;
+
+                p2.correctDots = p2.playedDots;
                 p1.correctDots = p2.playedDots;
-                setPlayer1(p1)
+
+                p1.playedDots = [];
+                p2.playedDots = [];
+
+                setPlayer1(p1);
+                setPlayer2(p2);
+
+                let newgriddots = [...griddots];
+                newgriddots[index] = { isSelected: true, isCorrect: true };
+
+                setGriddots(newgriddots);
+
 
                 //reset grid
-                const resetGrid = Array(25).fill(
-                    { isSelected: false, isCorrect: true }
-                )
-                setGriddots(resetGrid);
-                console.log("p2 trnsfeted")
-            }else{
+                setTimeout(() => {
+                    const resetGrid = Array(25).fill(
+                        { isSelected: false, isCorrect: true }
+                    )
+                    setGriddots(resetGrid);
+                }, 500); // 500ms delay
+            } else {
 
 
                 //cleck of the selected dot is correct
-                if(p2.playedDots[p2.playedDots.length-1]===p2.correctDots[p2.playedDots.length-1]){
+                if (p2.playedDots[p2.playedDots.length - 1] === p2.correctDots[p2.playedDots.length - 1]) {
 
-                    let newgriddots = [...griddots];
-                    newgriddots[index] = {isSelected :true, isCorrect:true};
+                    
+
+                    //trigger a change for useeffect
+                    //reset grid
+                    setTimeout(() => {
+                        let newgriddots = [...griddots];
+                    newgriddots[index] = { isSelected: true, isCorrect: true };
 
                     setGriddots(newgriddots);
                     console.log("p2 clicked the correct dot")
+                    console.log(p2)
+                        
+                    }, 1000); // 500ms delay
 
 
-                }else{
+
+
+                } else {
                     //p2 lost
                     console.log("p2 lost")
                 }
@@ -120,20 +163,44 @@ function GridRecall() {
 
         }
 
-
-        
-       
-
     }
 
+    // Handle Player 2's turn
     useEffect(() => {
-        // code to run after rendering
-        if (player2.mode !== 0) {
-            if (player2.turn) {
+
+        console.log("useEffect Clicked")
+
+        if (player2.turn && player2.mode == 1) {
+            console.log(player2)
+
+
+            if (player2.playedDots.length >= player2.correctDots.length) {
+
+                const timeout = setTimeout(() => {
+                    const arr = [];
+                    for (let i = 0; i < 25; i++) {
+                        arr.push(i);
+                    }
+                    const remainingDots = arr.filter((dot) => !player2.correctDots.includes(dot));
+                    console.log(remainingDots);
+                    const randomIndex = remainingDots[Math.floor(Math.random() * remainingDots.length)];
+                    onDotClick(randomIndex);
+                }, 1000); // 1-second delay for Player 2's move
+                console.log("random 2 p2")
+                return () => clearTimeout(timeout); // Cleanup timeout
+
+
+            } else {
+                console.log(player2.correctDots[player2.playedDots.length] + "uuuuu")
+
+                onDotClick(player2.correctDots[player2.playedDots.length])
+                console.log(player2)
+                console.log("else")
 
             }
+
         }
-    }, [player2]);
+    }, [player2.playedDots, griddots]);
 
 
     return (
