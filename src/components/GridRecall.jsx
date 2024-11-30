@@ -73,7 +73,7 @@ function GridRecall() {
 
                     setPlayer1(p1);
                     setPlayer2(p2);
-                }, 500); // 500ms delay
+                }, 1000); // 500ms delay
 
 
             } else {
@@ -92,6 +92,12 @@ function GridRecall() {
                 } else {
                     //p1 lost
                     console.log("p1 lost")
+                    let newgriddots = [...griddots];
+                    newgriddots[index] = { isSelected: true, isCorrect: false };
+
+                    setGriddots(newgriddots);
+                    setPlayer1({ ...{ player1 }, haveLost: true });
+
                 }
             }
 
@@ -106,18 +112,7 @@ function GridRecall() {
 
 
             if (p2.playedDots.length > p2.correctDots.length) {
-                //tranfter the turn
-                p2.turn = false;
-                p1.turn = true;
 
-                p2.correctDots = p2.playedDots;
-                p1.correctDots = p2.playedDots;
-
-                p1.playedDots = [];
-                p2.playedDots = [];
-
-                setPlayer1(p1);
-                setPlayer2(p2);
 
                 let newgriddots = [...griddots];
                 newgriddots[index] = { isSelected: true, isCorrect: true };
@@ -131,25 +126,38 @@ function GridRecall() {
                         { isSelected: false, isCorrect: true }
                     )
                     setGriddots(resetGrid);
-                }, 500); // 500ms delay
+
+                    //tranfter the turn
+                    p2.turn = false;
+                    p1.turn = true;
+
+                    p2.correctDots = p2.playedDots;
+                    p1.correctDots = p2.playedDots;
+
+                    p1.playedDots = [];
+                    p2.playedDots = [];
+
+                    setPlayer1(p1);
+                    setPlayer2(p2);
+                }, 1000); // 500ms delay
             } else {
 
 
                 //cleck of the selected dot is correct
                 if (p2.playedDots[p2.playedDots.length - 1] === p2.correctDots[p2.playedDots.length - 1]) {
 
-                    
+
 
                     //trigger a change for useeffect
                     //reset grid
                     setTimeout(() => {
                         let newgriddots = [...griddots];
-                    newgriddots[index] = { isSelected: true, isCorrect: true };
+                        newgriddots[index] = { isSelected: true, isCorrect: true };
 
-                    setGriddots(newgriddots);
-                    console.log("p2 clicked the correct dot")
-                    console.log(p2)
-                        
+                        setGriddots(newgriddots);
+                        console.log("p2 clicked the correct dot")
+                        console.log(p2)
+
                     }, 1000); // 500ms delay
 
 
@@ -158,6 +166,11 @@ function GridRecall() {
                 } else {
                     //p2 lost
                     console.log("p2 lost")
+                    let newgriddots = [...griddots];
+                    newgriddots[index] = { isSelected: true, isCorrect: false };
+
+                    setGriddots(newgriddots);
+                    setPlayer1({ ...{ player1 }, haveLost: true });
                 }
             }
 
@@ -200,31 +213,82 @@ function GridRecall() {
             }
 
         }
-    }, [player2.playedDots, griddots]);
+    }, [griddots]);
+
+    function resetGame() {
+
+        setPlayer2({
+            mode: 1,
+            haveLost: false,
+            turn: true,
+            playedDots: [],
+            correctDots: []
+        })
+
+        setPlayer1({
+            mode: 0,
+            haveLost: false,
+            turn: false,
+            playedDots: [],
+            correctDots: []
+        })
+
+        setGriddots(Array(25).fill(
+            { isSelected: false, isCorrect: true }
+        ))
+
+    }
 
 
     return (
         <div style={{ ...styles.container, background: "black" }}>
-            <p style={{ background: "white" }}>{`${player1.turn}`}</p>
+
+            <div style={styles.turnIndicator}>
+                <div
+                    style={{
+                        ...styles.turnIndicatorBox,
+                        border: player1.turn ? (player1.haveLost ? "4px  solid red" : "4px  solid white") : "0px  solid white"
+                    }}
+                >
+                    You
+                </div>
+                <div
+                    style={{
+                        ...styles.turnIndicatorBox,
+                        border: player2.turn ? "4px  solid white" : "0px  solid white"
+
+                    }}
+                >
+                    
+                    Recall Rival
+                </div>
+
+            </div>
 
             <div style={{
                 ...styles.grid,
                 gridTemplateColumns: `repeat(5, 1fr)`,
-                gridTemplateRows: `repeat(5, 1fr)`,
-                background: `yellow`
+                gridTemplateRows: `repeat(5, 1fr)`
+
             }}>
 
                 {griddots.map((dot, index) => (
+
                     <div
                         key={index}
                         onClick={() => onDotClick(index)}
                         style={{
                             ...styles.dot,
-                            backgroundColor: dot.isSelected ? 'black' : 'blue',
+                            backgroundColor: dot.isSelected ? (dot.isCorrect ? '#32CD32' : '#DC143C') : '#F0F0F0',
                         }}
                     />
                 ))}
             </div>
+            {player1.haveLost && (
+                <div style={styles.gameOverOverlay} onClick={resetGame}>
+                    <h2>🔴 Game Over 🔴</h2>
+                    <p>Tap to restart</p>
+                </div>)}
         </div>
     )
 }
@@ -257,7 +321,51 @@ const styles = {
         aspectRatio: "1",
         cursor: 'pointer',
         borderRadius: "50%"
-    }
+    },
+    turnIndicatorBox: {
+        display: "flex",
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign:"center",
+
+        padding: "10px",
+        fontSize: "30px",
+        height: "15vh",
+        maxHeight: "400px",
+        color: "white",
+        borderRadius: "20px",
+        margin : "5px",
+
+    },
+    turnIndicator: {
+        display: "flex",
+        justifyContent: "space-between",
+        textAlign:"center",
+        margin : "10px",
+
+        width: "90vw",
+        height: "15vh",
+        maxWidth: "500px",
+        padding: "20px"
+
+    },
+    gameOverOverlay: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        color: "#fff",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+        zIndex: 10,
+        borderRadius: "5px",
+    },
 
 };
 
