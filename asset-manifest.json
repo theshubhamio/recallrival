@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/recallrival/static/css/main.f855e6bc.css",
+    "main.js": "/recallrival/static/js/main.d00dc375.js",
+    "static/js/453.1a0480f7.chunk.js": "/recallrival/static/js/453.1a0480f7.chunk.js",
+    "index.html": "/recallrival/index.html",
+    "main.f855e6bc.css.map": "/recallrival/static/css/main.f855e6bc.css.map",
+    "main.d00dc375.js.map": "/recallrival/static/js/main.d00dc375.js.map",
+    "453.1a0480f7.chunk.js.map": "/recallrival/static/js/453.1a0480f7.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f855e6bc.css",
+    "static/js/main.d00dc375.js"
+  ]
+}
