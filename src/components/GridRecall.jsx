@@ -1,4 +1,4 @@
-import { useReducer, useState } from "react";
+import { useReducer, useState, useEffect } from "react";
 
 
 function GridRecall() {
@@ -13,33 +13,132 @@ function GridRecall() {
         mode: 0,
         haveLost: false,
         turn: false,
-        playeddots: [],
+        playedDots: [],
         correctDots: []
     })
 
     // Player 2
     const [player2, setPlayer2] = useState({
-        mode: 1,
+        mode: 0,
         haveLost: false,
-        tuen: true,
+        turn: true,
         playedDots: [],
         correctDots: []
     })
 
+    function onDotClick(index) {
+
+        const p1 = {...player1};
+        const p2 = {...player2};
+
+        if(player1.turn && !player2.turn){
+
+            p1.playedDots.push(index);
+            console.log("p1 played")
+
+            if(p1.playedDots.length>p1.correctDots.length){
+                //tranfter the turn
+
+                p1.turn =false;
+                p2.turn = true;
+
+                p1.correctDots = p1.playedDots;
+                p2.correctDots = p1.playedDots;
+
+                p1.playedDots = [];
+                p2.playedDots = [];
+
+                setPlayer1(p1);
+                setPlayer2(p2)
+
+                //reset grid
+                const resetGrid = Array(25).fill(
+                    { isSelected: false, isCorrect: true }
+                )
+                setGriddots(resetGrid);
+                console.log("p1 transfeted");
+
+            }else{
+
+                //cleck of the selected dot is correct
+                if(p1.playedDots[p1.playedDots.length-1]===p1.correctDots[p1.playedDots.length-1]){
+
+                    let newgriddots = [...griddots];
+                    newgriddots[index] = {isSelected :true, isCorrect:true};
+
+                    setGriddots(newgriddots);
+                    
+                    console.log("p1 clicked the correct dot")
+
+                }else{
+                    //p1 lost
+                    console.log("p1 lost")
+                }
+            }
+
+        }
+
+        if(player2.turn && !player1.turn){
+
+            p2.playedDots.push(index);
+            console.log("p2 played")
 
 
+            if(p2.playedDots.length>p2.correctDots.length){
+                //tranfter the turn
+                p2.turn =false;
+                p2.correctDots = p2.playedDots;
+                setPlayer2(p2);
+                p1.turn = true;
+                p1.correctDots = p2.playedDots;
+                setPlayer1(p1)
+
+                //reset grid
+                const resetGrid = Array(25).fill(
+                    { isSelected: false, isCorrect: true }
+                )
+                setGriddots(resetGrid);
+                console.log("p2 trnsfeted")
+            }else{
 
 
-    function onDotClick(dot, index) {
-        //game logic to update the states
+                //cleck of the selected dot is correct
+                if(p2.playedDots[p2.playedDots.length-1]===p2.correctDots[p2.playedDots.length-1]){
+
+                    let newgriddots = [...griddots];
+                    newgriddots[index] = {isSelected :true, isCorrect:true};
+
+                    setGriddots(newgriddots);
+                    console.log("p2 clicked the correct dot")
+
+
+                }else{
+                    //p2 lost
+                    console.log("p2 lost")
+                }
+            }
+
+        }
+
+
         
-
+       
 
     }
+
+    useEffect(() => {
+        // code to run after rendering
+        if (player2.mode !== 0) {
+            if (player2.turn) {
+
+            }
+        }
+    }, [player2]);
 
 
     return (
         <div style={{ ...styles.container, background: "black" }}>
+            <p style={{ background: "white" }}>{`${player1.turn}`}</p>
 
             <div style={{
                 ...styles.grid,
@@ -48,12 +147,13 @@ function GridRecall() {
                 background: `yellow`
             }}>
 
-                {griddots.map((dot,index) => (
+                {griddots.map((dot, index) => (
                     <div
-                        onClick={() => onDotClick(dot,index)}
+                        key={index}
+                        onClick={() => onDotClick(index)}
                         style={{
                             ...styles.dot,
-                            backgroundColor: dot.isSelected ? 'yellow' : 'blue',
+                            backgroundColor: dot.isSelected ? 'black' : 'blue',
                         }}
                     />
                 ))}
