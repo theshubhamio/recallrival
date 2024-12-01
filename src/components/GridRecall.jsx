@@ -5,7 +5,7 @@ function GridRecall() {
 
     // Initial grid setup: 5x5 grid (25 elements)
     const [griddots, setGriddots] = useState(Array(25).fill(
-        { isSelected: false, isCorrect: true }
+        { isSelected: false, isCorrect: true, rank: 0 }
     ));
 
     // Player 1
@@ -51,14 +51,14 @@ function GridRecall() {
 
 
                 let newgriddots = [...griddots];
-                newgriddots[index] = { isSelected: true, isCorrect: true };
+                newgriddots[index] = { isSelected: true, isCorrect: true,rank: p1.playedDots.length };
 
                 setGriddots(newgriddots);
 
                 //reset grid
                 setTimeout(() => {
                     const resetGrid = Array(25).fill(
-                        { isSelected: false, isCorrect: true }
+                        { isSelected: false, isCorrect: true, rank:0 }
                     )
                     setGriddots(resetGrid);
                     console.log("p1 transfeted");
@@ -73,7 +73,7 @@ function GridRecall() {
 
                     setPlayer1(p1);
                     setPlayer2(p2);
-                }, 1000); // 500ms delay
+                }, 800); // 500ms delay
 
 
             } else {
@@ -82,7 +82,7 @@ function GridRecall() {
                 if (p1.playedDots[p1.playedDots.length - 1] === p1.correctDots[p1.playedDots.length - 1]) {
 
                     let newgriddots = [...griddots];
-                    newgriddots[index] = { isSelected: true, isCorrect: true };
+                    newgriddots[index] = { isSelected: true, isCorrect: true, rank:p1.playedDots.length };
 
                     setGriddots(newgriddots);
 
@@ -93,7 +93,7 @@ function GridRecall() {
                     //p1 lost
                     console.log("p1 lost")
                     let newgriddots = [...griddots];
-                    newgriddots[index] = { isSelected: true, isCorrect: false };
+                    newgriddots[index] = { isSelected: true, isCorrect: false,ranl:p1.playedDots.length };
 
                     setGriddots(newgriddots);
                     setPlayer1({ ...{ player1 }, haveLost: true });
@@ -115,7 +115,7 @@ function GridRecall() {
 
 
                 let newgriddots = [...griddots];
-                newgriddots[index] = { isSelected: true, isCorrect: true };
+                newgriddots[index] = { isSelected: true, isCorrect: true, rank:p2.playedDots.length };
 
                 setGriddots(newgriddots);
 
@@ -123,7 +123,7 @@ function GridRecall() {
                 //reset grid
                 setTimeout(() => {
                     const resetGrid = Array(25).fill(
-                        { isSelected: false, isCorrect: true }
+                        { isSelected: false, isCorrect: true, rank:0 }
                     )
                     setGriddots(resetGrid);
 
@@ -139,7 +139,7 @@ function GridRecall() {
 
                     setPlayer1(p1);
                     setPlayer2(p2);
-                }, 1000); // 500ms delay
+                }, 800); // 500ms delay
             } else {
 
 
@@ -152,13 +152,13 @@ function GridRecall() {
                     //reset grid
                     setTimeout(() => {
                         let newgriddots = [...griddots];
-                        newgriddots[index] = { isSelected: true, isCorrect: true };
+                        newgriddots[index] = { isSelected: true, isCorrect: true, rank:p2.playedDots.length };
 
                         setGriddots(newgriddots);
                         console.log("p2 clicked the correct dot")
                         console.log(p2)
 
-                    }, 1000); // 500ms delay
+                    }, 800); // 500ms delay
 
 
 
@@ -167,7 +167,7 @@ function GridRecall() {
                     //p2 lost
                     console.log("p2 lost")
                     let newgriddots = [...griddots];
-                    newgriddots[index] = { isSelected: true, isCorrect: false };
+                    newgriddots[index] = { isSelected: true, isCorrect: false, rank : p2.playedDots.length };
 
                     setGriddots(newgriddots);
                     setPlayer1({ ...{ player1 }, haveLost: true });
@@ -198,7 +198,7 @@ function GridRecall() {
                     console.log(remainingDots);
                     const randomIndex = remainingDots[Math.floor(Math.random() * remainingDots.length)];
                     onDotClick(randomIndex);
-                }, 1000); // 1-second delay for Player 2's move
+                }, 800); // 1-second delay for Player 2's move
                 console.log("random 2 p2")
                 return () => clearTimeout(timeout); // Cleanup timeout
 
@@ -234,7 +234,7 @@ function GridRecall() {
         })
 
         setGriddots(Array(25).fill(
-            { isSelected: false, isCorrect: true }
+            { isSelected: false, isCorrect: true, rank:0 }
         ))
 
     }
@@ -259,11 +259,12 @@ function GridRecall() {
 
                     }}
                 >
-                    
+
                     Recall Rival
                 </div>
 
             </div>
+
 
             <div style={{
                 ...styles.grid,
@@ -271,6 +272,7 @@ function GridRecall() {
                 gridTemplateRows: `repeat(5, 1fr)`
 
             }}>
+
 
                 {griddots.map((dot, index) => (
 
@@ -280,10 +282,29 @@ function GridRecall() {
                         style={{
                             ...styles.dot,
                             backgroundColor: dot.isSelected ? (dot.isCorrect ? '#32CD32' : '#DC143C') : '#F0F0F0',
+                            alignContent: "center",
+                            fontSize: "28px",
+                            color:"white",
+                            fontStyle: "bold"
+                            
+
                         }}
-                    />
+
+                        
+                    >
+                        {dot.isSelected?(dot.rank):""}
+
+                    </div>
                 ))}
+
+
             </div>
+
+            <div style={{ color: "white", padding: "40px" }}><p>Take turns selecting dots on the grid and repeat the full sequence before choosing your dot. A wrong move or repeating a dot ends your turn. Keep the sequence going to win!</p>
+
+            </div>
+
+
             {player1.haveLost && (
                 <div style={styles.gameOverOverlay} onClick={resetGame}>
                     <h2>🔴 Game Over 🔴</h2>
@@ -327,7 +348,7 @@ const styles = {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        textAlign:"center",
+        textAlign: "center",
 
         padding: "10px",
         fontSize: "30px",
@@ -335,14 +356,14 @@ const styles = {
         maxHeight: "400px",
         color: "white",
         borderRadius: "20px",
-        margin : "5px",
+        margin: "5px",
 
     },
     turnIndicator: {
         display: "flex",
         justifyContent: "space-between",
-        textAlign:"center",
-        margin : "10px",
+        textAlign: "center",
+        margin: "10px",
 
         width: "90vw",
         height: "15vh",
