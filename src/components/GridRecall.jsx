@@ -93,10 +93,12 @@ function GridRecall() {
                     //p1 lost
                     console.log("p1 lost")
                     let newgriddots = [...griddots];
-                    newgriddots[index] = { isSelected: true, isCorrect: false,ranl:p1.playedDots.length };
+                    newgriddots[index] = { isSelected: true, isCorrect: false,rank:p1.playedDots.length };
+
 
                     setGriddots(newgriddots);
                     setPlayer1({ ...{ player1 }, haveLost: true });
+
 
                 }
             }
@@ -187,7 +189,7 @@ function GridRecall() {
             console.log(player2)
 
 
-            if (player2.playedDots.length >= player2.correctDots.length) {
+            if (player2.playedDots.length == player2.correctDots.length || player2.playedDots.length == player2.correctDots.length+1) {
 
                 const timeout = setTimeout(() => {
                     const arr = [];
@@ -204,11 +206,17 @@ function GridRecall() {
 
 
             } else {
-                console.log(player2.correctDots[player2.playedDots.length] + "uuuuu")
 
-                onDotClick(player2.correctDots[player2.playedDots.length])
-                console.log(player2)
-                console.log("else")
+                if(player2.correctDots[player2.playedDots.length] !== undefined){
+                    console.log(player2.correctDots[player2.playedDots.length] + "uuuuu")
+
+                    onDotClick(player2.correctDots[player2.playedDots.length])
+                    console.log(player2)
+                    console.log("else")
+
+                }
+
+               
 
             }
 
@@ -247,7 +255,7 @@ function GridRecall() {
                 <div
                     style={{
                         ...styles.turnIndicatorBox,
-                        border: player1.turn ? (player1.haveLost ? "4px  solid red" : "4px  solid white") : "0px  solid white"
+                        border: player1.turn ? (player1.haveLost ? "4px  solid #D6D8DA" : "4px  solid #D6D8DA") : "0px  solid white"
                     }}
                 >
                     You
@@ -281,7 +289,7 @@ function GridRecall() {
                         onClick={() => onDotClick(index)}
                         style={{
                             ...styles.dot,
-                            backgroundColor: dot.isSelected ? (dot.isCorrect ? '#32CD32' : '#DC143C') : '#F0F0F0',
+                            backgroundColor: dot.isSelected ? (dot.isCorrect ? '#34C759' : '#E74C3C') : '#D6D8DA',
                             alignContent: "center",
                             fontSize: "28px",
                             color:"white",
@@ -300,7 +308,11 @@ function GridRecall() {
 
             </div>
 
-            <div style={{ color: "white", padding: "40px" }}><p>Take turns selecting dots on the grid and repeat the full sequence before choosing your dot. A wrong move or repeating a dot ends your turn. Keep the sequence going to win!</p>
+            <div style={{ color: "#D6D8DA",margin:"40px" }}>
+                <h2>Player's manual</h2>
+                <p>Recall Rival starts by selecting one random dot from a grid of 25 dots. Your turn is to select the same dot and then add a new random dot to the sequence. Next, Recall Rival repeats the sequence and adds another random dot. Keep taking turns, remembering and growing the sequence of randomly chosen dots. The game ends if you pick the wrong dot. Have fun and stay focused!</p>
+
+
 
             </div>
 
@@ -320,7 +332,7 @@ const styles = {
         flexDirection: "column",
         alignItems: "center",
         width: "100vw",
-        height: "100vh",
+        height: "100%",
     },
     grid: {
         display: "grid",
@@ -354,7 +366,8 @@ const styles = {
         fontSize: "30px",
         height: "15vh",
         maxHeight: "400px",
-        color: "white",
+        color: "#D6D8DA",
+
         borderRadius: "20px",
         margin: "5px",
 
